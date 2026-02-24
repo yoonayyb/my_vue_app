@@ -1,0 +1,3 @@
+# 保持 package.json 与 pnpm-lock.yaml 为 LF，避免自动替换提示
+package.json text eol=lf
+pnpm-lock.yaml text eol=lf
