@@ -1,3 +1,33 @@
-# 保持 package.json 与 pnpm-lock.yaml 为 LF，避免自动替换提示
-package.json text eol=lf
-pnpm-lock.yaml text eol=lf
+# 默认自动识别文本文件并进行归一化
+* text=auto
+
+# 强制常见源码/文本文件存储为 LF（仓库内一致为 LF）
+*.sh     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text eol=lf
+*.html   text eol=lf
+*.htm    text eol=lf
+*.js     text eol=lf
+*.cjs    text eol=lf
+*.mjs    text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.json   text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.vue    text eol=lf
+
+# 针对你报告警告的具体文件明确设置为 LF
+src/auto-imports.d.ts   text eol=lf
+src/components.d.ts     text eol=lf
+stats.html              text eol=lf
+
+# 二进制文件不要转换
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.gz     binary
+*.zip    binary

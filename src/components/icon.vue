@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <i-ep-search />
-    </div>
-    <el-icon><Plus /></el-icon>
+  <div>
+    <i-ep-search />
+  </div>
+  <el-icon><Plus /></el-icon>
     
-    <!-- <el-icon><Check /></el-icon> -->
+  <!-- <el-icon><Check /></el-icon> -->
 </template>
 <style scoped>
 div {

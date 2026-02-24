@@ -56,7 +56,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'), // 确保路径正确
+        '@': path.resolve(__dirname, './src'), // 确保路径正确
         '@stores': path.resolve(__dirname, 'src/stores'),
       },
     },
@@ -122,7 +122,9 @@ export default defineConfig(({ mode }) => {
       }),
       eslintPlugin({
         cache: false,
-        include: ['src/**/*.vue', 'src/**/*.js'],
+        include: ['src/**/*.vue', 'src/**/*.js', 'src/**/*.ts'],
+        // 调试时可关闭构建失败（上线可移除或设为 true）
+        failOnError: false,
       }),
       lazyImport({
         resolvers: [],

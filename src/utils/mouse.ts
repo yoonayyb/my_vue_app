@@ -1,23 +1,24 @@
-import { Ref, reactive, onMounted, onUnmounted } from 'vue';
+import { reactive, onMounted, onUnmounted, Ref } from 'vue';
 
-export const useMouse = (el: Ref<HTMLElement | null>) => {
+export function useMouse(elRef?: Ref<HTMLElement | null> | null) {
   const mouse = reactive({ x: 0, y: 0 });
 
-  const update = (event: MouseEvent) => {
-    if (el.value) {
-      const rect = el.value.getBoundingClientRect();
-      mouse.x = event.clientX - rect.left;
-      mouse.y = event.clientY - rect.top;
-    }
-  };
+  let target: HTMLElement | Window = window;
+  function handler(e: MouseEvent) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  }
 
   onMounted(() => {
-    window.addEventListener('mousemove', update);
+    if (elRef && 'value' in elRef && elRef.value) {
+      target = elRef.value;
+    }
+    (target as any).addEventListener('mousemove', handler);
   });
 
   onUnmounted(() => {
-    window.removeEventListener('mousemove', update);
+    (target as any).removeEventListener('mousemove', handler);
   });
 
   return { mouse };
-};
+}

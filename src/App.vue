@@ -1,4 +1,4 @@
-<script setup >
+<script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import icon from './components/icon.vue'
 import stroke from './components/stroke.vue';
@@ -14,7 +14,7 @@ import { set } from 'xe-utils';
 import { getCurrentInstance } from 'vue';
 const instance = getCurrentInstance()
 instance.appContext.config.globalProperties.$api.postExampleData()
-console.log("🚀 ~ instance11111111:", )
+console.log('🚀 ~ instance11111111:', )
 const language = ref('zh-cn')
 const locale = computed(() => (language.value === 'zh-cn' ? zhCn : en))
 
@@ -46,7 +46,7 @@ const shallowValue = ref({
 // shallowValue.value.count++  // 不会触发更新
 // shallowValue.value.nested.value = 'world'  // 不会触发更新
 // shallowValue.value = { count: 1 }  // 触发更新
-console.log("🚀 ~ shallowValue:", shallowValue)
+console.log('🚀 ~ shallowValue:', shallowValue)
 
 
 // 初始化暗黑模式状态
@@ -101,14 +101,18 @@ const render = ()=>{
   <!-- <HelloWorld msg="Welcome to Vue 3 + Vite" />
   
   <icon /> -->
-      <TableComponent /> 
-      <svg width="200" height="200" viewBox="0 0 100 100">
-          <stroke
-            :animationDuration="3000"
-            strokeColor="red"
-          />
-        </svg>
-        <LoginPage />
+  <TableComponent /> 
+  <svg
+    width="200"
+    height="200"
+    viewBox="0 0 100 100"
+  >
+    <stroke
+      :animation-duration="3000"
+      stroke-color="red"
+    />
+  </svg>
+  <LoginPage />
   <!-- <el-button type="primary" :loading-icon="Eleme" loading>Loading</el-button> -->
 </template>
 

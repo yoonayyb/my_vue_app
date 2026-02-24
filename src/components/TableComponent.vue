@@ -1,30 +1,66 @@
 <template>
   <div style="perspective: 1000px;">
-    <div class="stroke-text">描边动画</div>
-    <div class="multi-stroke">描边动画</div>
-    <div class="neon-text">描边动画</div>
-    <div class=" gradient-stroke">描边动画</div>
-    <div class=" d3-stroke">描边动画</div>
-    <div class=" breathing-stroke">描边动画</div>
+    <div class="stroke-text">
+      描边动画
+    </div>
+    <div class="multi-stroke">
+      描边动画
+    </div>
+    <div class="neon-text">
+      描边动画
+    </div>
+    <div class=" gradient-stroke">
+      描边动画
+    </div>
+    <div class=" d3-stroke">
+      描边动画
+    </div>
+    <div class=" breathing-stroke">
+      描边动画
+    </div>
 
-    <video ref="videoRef" controls width="600" @timeupdate="handleTimeUpdate">
-      <source src="https://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-light.mp4" type="video/mp4">
+    <video
+      ref="videoRef"
+      controls
+      width="600"
+      @timeupdate="handleTimeUpdate"
+    >
+      <source
+        src="https://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-light.mp4"
+        type="video/mp4"
+      >
     </video>
 
     <div class="controls">
       <!-- 速率控制 -->
-      <button v-for="speed in speedOptions" :key="speed" @click="changeSpeed(speed)"
-        :class="{ active: currentSpeed === speed }">
+      <button
+        v-for="speed in speedOptions"
+        :key="speed"
+        :class="{ active: currentSpeed === speed }"
+        @click="changeSpeed(speed)"
+      >
         {{ speed }}x
       </button>
 
       <!-- 时间跳转 -->
-      <input v-model.number="seekTime" type="number" placeholder="秒数" min="0" :max="duration">
-      <button @click="seekTo">跳转</button>
+      <input
+        v-model.number="seekTime"
+        type="number"
+        placeholder="秒数"
+        min="0"
+        :max="duration"
+      >
+      <button @click="seekTo">
+        跳转
+      </button>
 
       <!-- 快捷跳转 -->
-      <button @click="seekBy(-10)">-10s</button>
-      <button @click="seekBy(10)">+10s</button>
+      <button @click="seekBy(-10)">
+        -10s
+      </button>
+      <button @click="seekBy(10)">
+        +10s
+      </button>
 
       <div>当前时间: {{ currentTime }} / {{ duration }}秒</div>
     </div>

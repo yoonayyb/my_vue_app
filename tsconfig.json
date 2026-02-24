@@ -1,0 +1,53 @@
+{
+  // 项目编译器选项（注释说明放在此文件中以便查阅）
+  "compilerOptions": {
+    // 目标 JS 版本（现代浏览器 / Vite 推荐 ESNext）
+    "target": "ESNext",
+
+    // 模块输出（开发环境使用 ESNext）
+    "module": "ESNext",
+
+    // 模块解析策略（Vite/ESM 环境建议使用 "bundler"）
+    "moduleResolution": "bundler",
+
+    // 支持的库（DOM 是必须的以识别 document/window 等）
+    "lib": ["ESNext", "DOM"],
+
+    // 保留 JSX（Vue SFC 不使用 React JSX，这里用 preserve）
+    "jsx": "preserve",
+
+    // 严格类型检查
+    "strict": true,
+
+    // 不生成输出文件（Vite 负责构建）
+    "noEmit": true,
+
+    // 允许解析 JSON 模块
+    "resolveJsonModule": true,
+
+    // 兼容常见 ESM -> CommonJS interop
+    "esModuleInterop": true,
+
+    // 避免类型包检查阻塞（提高速度）
+    "skipLibCheck": true,
+
+    // TypeScript 在单文件组件里的类型（vite 提供）
+    "types": ["vite/client"],
+
+    // 项目根路径与路径别名（可选）
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    // 保持一些推荐的选项
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true
+  },
+
+  // include 确保 tsserver 能看到 .vue/.ts/.d.ts 文件（必须包含 src 下的声明文件）
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "src/**/*.json"],
+
+  // 排除 node_modules 与构建输出
+  "exclude": ["node_modules", "dist", "build"]
+}

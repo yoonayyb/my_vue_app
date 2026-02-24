@@ -11,12 +11,12 @@ import 'dayjs/locale/zh-cn'; // 导入本地化语言
 import 'dayjs/locale/en'; // 导入本地化语言
 import 'dayjs/locale/ko'; // 导入本地化语言
 import { useMainStore } from '@/stores';
-import { set } from 'xe-utils';
-import { de } from 'element-plus/es/locales.mjs';
+
 import testCom from './testCom.vue';
 import { useMouse } from '../utils/mouse';
 const { mouse } = useMouse(useTemplateRef('helloWorld'));
 import { storeCount,setCount } from '../utils/store.js'
+import { useTemplateRef, toRefs, ref, watch, reactive, watchPostEffect, watchSyncEffect, watchEffect, provide } from 'vue';
 
 const [ ct,sct ] = setCount()
 
@@ -25,8 +25,14 @@ const { x, y } = toRefs(mouse)
 const store = useMainStore();
 store.increment();
 console.log('store', store);
-defineProps({
-  msg: String,
+// const props = withDefaults(defineProps(['msg']), {
+//   msg: 'Hello World',
+// });
+const props = defineProps({
+  msg: {
+    type: String,
+    default: 'Hello World'
+  }
 });
 const count = ref(0);
 const { stop, resume, pause } = watch(
@@ -96,7 +102,7 @@ const debounce = (func, wait) => {
 const throttle = (func, limit) => {
   let inThrottle;
   return function (...args) {
-    console.log("🚀 ~ throttle ~ args:", args)
+    console.log('🚀 ~ throttle ~ args:', args)
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
@@ -130,7 +136,7 @@ const deepClone = (value) => {
   return _deepClone(value)
 }
 for (const item of ['a', 'b']) {
-  console.log("🚀 ~ item:", item)
+  console.log('🚀 ~ item:', item)
   // console.log(item)
 }
 const likes = ref(10);
@@ -158,22 +164,47 @@ provide('location', {
 </script>
 
 <template>
-  <div ref="helloWorld" class="flex flex-col items-center" style="background-color: aqua">
+  <div
+    ref="helloWorld"
+    class="flex flex-col items-center"
+    style="background-color: aqua"
+  >
     <div>From A: {{ ct }}</div>
     
     <div>{{ x }} - {{ y }}</div>
 
-    <testCom id="custom-layout" :style="{ width: '300px', background: 'red', color: '#000', padding: '10px' }"
-      @click="run" v-model="m" @some-event="callback" :likes="likes" :greeting-message="'hello'" :title="'yyb'" />
+    <testCom
+      id="custom-layout"
+      v-model="m"
+      :style="{ width: '300px', background: 'red', color: '#000', padding: '10px' }"
+      :likes="likes"
+      :greeting-message="'hello'"
+      :title="'yyb'"
+      @click="run"
+      @some-event="callback"
+    />
     <div class="container">
-      <el-button @click="() => { likes++; console.log(likes) }">{{ likes }}</el-button>
-      <el-button @click="stop">停止</el-button>
-      <el-button @click="resume">恢复监听</el-button>
-      <el-button @click="pause">暂停监听</el-button>
-      <h1>{{ msg }}</h1>
+      <el-button @click="() => { likes++; console.log(likes) }">
+        {{ likes }}
+      </el-button>
+      <el-button @click="stop">
+        停止
+      </el-button>
+      <el-button @click="resume">
+        恢复监听
+      </el-button>
+      <el-button @click="pause">
+        暂停监听
+      </el-button>
+      <h1>{{ props.msg }}</h1>
       <div>{{ dayjs.months() }}</div>
       <div class="card">
-        <button type="button" @click="count++">count is {{ count }}</button>
+        <button
+          type="button"
+          @click="count++"
+        >
+          count is {{ count }}
+        </button>
       </div>
     </div>
   </div>
