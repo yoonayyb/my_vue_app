@@ -1,8 +1,9 @@
 import { defineConfig } from 'eslint-define-config';
-import vueRecommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
+// import vueRecommended from 'eslint-plugin-vue/lib/configs/vue3-recommended.js';
 import vuePlugin from 'eslint-plugin-vue';
 
 export default defineConfig([
+  ...vuePlugin.configs['flat/recommended'],
   {
     ignores: [
       // 将 .eslintignore 文件中的内容迁移到这里
@@ -27,7 +28,7 @@ export default defineConfig([
     },
     rules: {
       // 合并 vueRecommended 的规则
-      ...vueRecommended.rules,
+      // ...vueRecommended.rules,
       // 'no-console': 'warn',
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 生产环境中警告 console 使用，开发环境中关闭规则
       'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 生产环境中警告 debugger 使用，开发环境中关闭规则
