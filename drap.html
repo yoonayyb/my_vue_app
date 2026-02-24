@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>可拖动的图片画廊（已修复）</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: move;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            pointer-events: none; /* 防止图片干扰拖动 */
+        }
+        
+        .gallery-item.dragging {
+            transform: rotate(5deg) scale(1.05);
+            opacity: 0.7;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .gallery-item.over {
+            border: 2px solid #4CAF50;
+            background: #f1f8e9;
+        }
+        
+        .item-title {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            pointer-events: none; /* 防止文字干扰拖动 */
+        }
+        
+        .debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <h2>可拖动的图片画廊（已修复事件目标问题）</h2>
+    <p>拖动图片可以重新排序</p>
+    
+    <div class="debug" id="debugInfo">拖动信息将显示在这里</div>
+    
+    <div class="gallery" id="imageGallery">
+        <div class="gallery-item" draggable="true" data-id="1">
+            <img src="https://picsum.photos/200/150?random=1" alt="图片1">
+            <div class="item-title">图片 1</div>
+        </div>
+        <div class="gallery-item" draggable="true" data-id="2">
+            <img src="https://picsum.photos/200/150?random=2" alt="图片2">
+            <div class="item-title">图片 2</div>
+        </div>
+        <div class="gallery-item" draggable="true" data-id="3">
+            <img src="https://picsum.photos/200/150?random=3" alt="图片3">
+            <div class="item-title">图片 3</div>
+        </div>
+        <div class="gallery-item" draggable="true" data-id="4">
+            <img src="https://picsum.photos/200/150?random=4" alt="图片4">
+            <div class="item-title">图片 4</div>
+        </div>
+    </div>
+
+    <script>
+        class DraggableGallery {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.draggedItem = null;
+                this.init();
+            }
+            
+            init() {
+                // 使用箭头函数确保this指向正确
+                this.container.addEventListener('dragstart', (e) => this.handleDragStart(e));
+                this.container.addEventListener('dragend', (e) => this.handleDragEnd(e));
+                this.container.addEventListener('dragover', (e) => this.handleDragOver(e));
+                this.container.addEventListener('dragenter', (e) => this.handleDragEnter(e));
+                this.container.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+                this.container.addEventListener('drop', (e) => this.handleDrop(e));
+                
+                this.updateDebug('画廊初始化完成');
+            }
+            
+            handleDragStart(e) {
+                // 使用 closest 找到最近的 gallery-item
+                const galleryItem = e.target.closest('.gallery-item');
+                if (galleryItem) {
+                    this.draggedItem = galleryItem;
+                    galleryItem.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    
+                    // 设置拖动数据
+                    e.dataTransfer.setData('text/plain', galleryItem.dataset.id);
+                    
+                    this.updateDebug(`开始拖动: 项目 ${galleryItem.dataset.id}`);
+                }
+            }
+            
+            handleDragEnd(e) {
+                if (this.draggedItem) {
+                    this.draggedItem.classList.remove('dragging');
+                    this.draggedItem = null;
+                    this.updateDebug('拖动结束');
+                }
+            }
+            
+            handleDragOver(e) {
+                e.preventDefault(); // 必须调用，允许放置
+                e.dataTransfer.dropEffect = 'move';
+            }
+            
+            handleDragEnter(e) {
+                e.preventDefault();
+                
+                // 使用 closest 找到最近的 gallery-item
+                const targetItem = e.target.closest('.gallery-item');
+                if (targetItem && targetItem !== this.draggedItem) {
+                    targetItem.classList.add('over');
+                    this.updateDebug(`进入项目: ${targetItem.dataset.id}`);
+                }
+            }
+            
+            handleDragLeave(e) {
+                // 使用 closest 找到最近的 gallery-item
+                const targetItem = e.target.closest('.gallery-item');
+                if (targetItem) {
+                    targetItem.classList.remove('over');
+                    this.updateDebug(`离开项目: ${targetItem.dataset.id}`);
+                }
+            }
+            
+            handleDrop(e) {
+                e.preventDefault();
+                this.updateDebug('触发 drop 事件');
+                
+                if (!this.draggedItem) {
+                    this.updateDebug('错误: 没有拖动的项目');
+                    return;
+                }
+                
+                // 使用 closest 找到放置的目标项目
+                const targetItem = e.target.closest('.gallery-item');
+                this.updateDebug(`目标项目: ${targetItem ? targetItem.dataset.id : 'null'}`);
+                
+                if (targetItem && targetItem !== this.draggedItem) {
+                    this.updateDebug(`开始交换: ${this.draggedItem.dataset.id} -> ${targetItem.dataset.id}`);
+                    
+                    // 获取所有项目
+                    const allItems = Array.from(this.container.children);
+                    const draggedIndex = allItems.indexOf(this.draggedItem);
+                    const targetIndex = allItems.indexOf(targetItem);
+                    
+                    this.updateDebug(`索引: 拖动项=${draggedIndex}, 目标项=${targetIndex}`);
+                    
+                    // 交换位置
+                    if (draggedIndex < targetIndex) {
+                        targetItem.after(this.draggedItem);
+                    } else {
+                        targetItem.before(this.draggedItem);
+                    }
+                    
+                    this.updateDebug(`交换完成!`);
+                    this.showSuccessMessage(`图片 ${this.draggedItem.dataset.id} 移动到新位置`);
+                } else {
+                    this.updateDebug(`放置条件不满足: targetItem=${!!targetItem}, 不是自己=${targetItem !== this.draggedItem}`);
+                }
+                
+                // 清理状态
+                this.cleanup();
+            }
+            
+            cleanup() {
+                // 移除所有over状态
+                this.container.querySelectorAll('.gallery-item.over').forEach(item => {
+                    item.classList.remove('over');
+                });
+            }
+            
+            updateDebug(message) {
+                const debugEl = document.getElementById('debugInfo');
+                debugEl.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+                console.log(message);
+            }
+            
+            showSuccessMessage(message) {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 60px;
+                    right: 10px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 4px;
+                    z-index: 1000;
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 2000);
+            }
+        }
+        
+        // 页面加载后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            new DraggableGallery('imageGallery');
+        });
+    </script>
+</body>
+</html>

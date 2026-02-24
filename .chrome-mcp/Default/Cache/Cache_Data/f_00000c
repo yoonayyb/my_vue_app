@@ -1,0 +1,257 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/HelloWorld.vue");/* unplugin-vue-components disabled */import { ElButton as __unplugin_components_0 } from "/node_modules/.vite/deps/element-plus_es.js?v=766a04b7";import "/node_modules/.vite/deps/element-plus_es_components_base_style_css.js?v=766a04b7";import "/node_modules/.vite/deps/element-plus_es_components_button_style_css.js?v=766a04b7";
+import { useTemplateRef, toRefs, ref, watch, reactive, watchPostEffect, watchSyncEffect, watchEffect, provide } from "/node_modules/.vite/deps/vue.js?v=766a04b7";
+import { dayjs } from "/node_modules/.vite/deps/element-plus.js?v=766a04b7";
+import "/node_modules/.vite/deps/dayjs_locale_zh-cn.js?v=766a04b7"; // 导入本地化语言
+import "/node_modules/.vite/deps/dayjs_locale_en.js?v=766a04b7"; // 导入本地化语言
+import "/node_modules/.vite/deps/dayjs_locale_ko.js?v=766a04b7"; // 导入本地化语言
+import { useMainStore } from "/src/stores/index.js";
+import __vite__cjsImport9_xeUtils from "/node_modules/.vite/deps/xe-utils.js?v=766a04b7"; const set = __vite__cjsImport9_xeUtils["set"];
+import { de } from "/node_modules/.vite/deps/element-plus_es_locales__mjs.js?v=766a04b7";
+import testCom from "/src/components/testCom.vue";
+import { useMouse } from "/src/utils/mouse.ts";
+import { storeCount,setCount } from "/src/utils/store.ts"
+
+
+const _sfc_main = {
+  __name: 'HelloWorld',
+  props: {
+  msg: String,
+},
+  setup(__props, { expose: __expose }) {
+  __expose();
+
+/**
+ * 导入 Vue 的 ref 函数，用于创建响应式变量
+ * 导入 getCurrentInstance 函数，用于获取当前组件实例
+ */
+/**
+ * 导入 Element Plus 的 dayjs 函数，用于日期处理
+ */
+const { mouse } = useMouse(useTemplateRef('helloWorld'));
+const [ ct,sct ] = setCount()
+
+
+const { x, y } = toRefs(mouse)
+const store = useMainStore();
+store.increment();
+console.log('store', store);
+
+const count = ref(0);
+const { stop, resume, pause } = watch(
+  () => store.count,
+  (newVal) => {
+    console.log('store.count changed:', newVal);
+  }
+);
+
+const obj111 = reactive({
+  count: 0,
+  nested: {
+    value: 111
+  }
+});
+
+// 修复 watch 对象的错误使用
+watch(
+  () => obj111.count,
+  (newVal, oldVal) => {
+    console.log('Count changed:', newVal, oldVal);
+  }
+);
+
+watchPostEffect(() => {
+  console.log('这是在 DOM 更新之后运行的.');
+});
+//尽量少用 响应式如果不断变化 会不断触发
+watchSyncEffect(() => {
+  console.log('这会在响应式状态变化之后、DOM 更新之前同步运行.');
+});
+watchEffect((a) => {
+
+  const timer = setTimeout(() => {
+
+
+    console.log('Count changed to:', count.value);
+  }, 1000);
+  //清理函数 在下一次副作用运行之前或组件卸载时调用
+  console.log(count.value)
+
+  a(() => {
+    console.log('timer', timer)
+
+    clearTimeout(timer);
+  });
+
+});
+const name = ref('Vue.js')
+
+function greet(a, event) {
+  console.log(`Hello ${name.value}!`)
+  // `event` 是 DOM 原生事件
+  if (event) {
+    console.log(event?.target?.tagName)
+  }
+}
+//防抖
+const debounce = (func, wait) => {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+};
+//节流
+const throttle = (func, limit) => {
+  let inThrottle;
+  return function (...args) {
+    console.log("🚀 ~ throttle ~ args:", args)
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
+function run(...a) {
+  console.log('run', a);
+}
+const handle = throttle(run, 2000);
+handle('1111')
+//对象深拷贝
+const deepClone = (value) => {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  let map = new Map()
+
+  function _deepClone(value) {
+    if (map.has(value)) {
+      return map.get(value)
+    }
+    let result = Array.isArray(value) ? [] : {}
+    map.set(value, result)
+    for (const key in value) {
+      result[key] = typeof value[key] === 'object' ? _deepClone(value[key]) : value[key];
+    }
+    return result
+  }
+  return _deepClone(value)
+}
+for (const item of ['a', 'b']) {
+  console.log("🚀 ~ item:", item)
+  // console.log(item)
+}
+const likes = ref(10);
+const callback = (...payload) => {
+  console.log('Event received with payload:', payload);
+};
+const m = reactive({
+  value: 0,
+  key: 'key'
+});
+const updata = (val) => {
+  // m.value = val
+  console.log('Updata event received with value:', val);
+};
+const location = ref('North Pole')
+
+function updateLocation(val) {
+  location.value = val
+}
+
+provide('location', {
+  location,
+  updateLocation
+})
+
+const __returned__ = { mouse, ct, sct, x, y, store, count, stop, resume, pause, obj111, name, greet, debounce, throttle, run, handle, deepClone, likes, callback, m, updata, location, updateLocation, get dayjs() { return dayjs }, get useMainStore() { return useMainStore }, get set() { return set }, get de() { return de }, testCom, get useMouse() { return useMouse }, get storeCount() { return storeCount }, get setCount() { return setCount } }
+Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true })
+return __returned__
+}
+
+}
+import { toDisplayString as _toDisplayString, createElementVNode as _createElementVNode, createVNode as _createVNode, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, openBlock as _openBlock, createElementBlock as _createElementBlock } from "/node_modules/.vite/deps/vue.js?v=766a04b7"
+
+const _hoisted_1 = {
+  ref: "helloWorld",
+  class: "flex flex-col items-center",
+  style: {"background-color":"aqua"}
+}
+const _hoisted_2 = { class: "container" }
+const _hoisted_3 = { class: "card" }
+
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_el_button = __unplugin_components_0
+
+  return (_openBlock(), _createElementBlock("div", _hoisted_1, [
+    _createElementVNode("div", null, "From A: " + _toDisplayString($setup.ct), 1 /* TEXT */),
+    _createElementVNode("div", null, _toDisplayString($setup.x) + " - " + _toDisplayString($setup.y), 1 /* TEXT */),
+    _createVNode($setup["testCom"], {
+      id: "custom-layout",
+      style: { width: '300px', background: 'red', color: '#000', padding: '10px' },
+      onClick: $setup.run,
+      modelValue: $setup.m,
+      "onUpdate:modelValue": _cache[0] || (_cache[0] = $event => (($setup.m) = $event)),
+      onSomeEvent: $setup.callback,
+      likes: $setup.likes,
+      "greeting-message": 'hello',
+      title: 'yyb'
+    }, null, 8 /* PROPS */, ["modelValue", "likes"]),
+    _createElementVNode("div", _hoisted_2, [
+      _createVNode(_component_el_button, {
+        onClick: _cache[1] || (_cache[1] = () => { $setup.likes++; console.log($setup.likes) })
+      }, {
+        default: _withCtx(() => [
+          _createTextVNode(_toDisplayString($setup.likes), 1 /* TEXT */)
+        ]),
+        _: 1 /* STABLE */
+      }),
+      _createVNode(_component_el_button, { onClick: $setup.stop }, {
+        default: _withCtx(() => [...(_cache[3] || (_cache[3] = [
+          _createTextVNode("停止", -1 /* CACHED */)
+        ]))]),
+        _: 1 /* STABLE */
+      }, 8 /* PROPS */, ["onClick"]),
+      _createVNode(_component_el_button, { onClick: $setup.resume }, {
+        default: _withCtx(() => [...(_cache[4] || (_cache[4] = [
+          _createTextVNode("恢复监听", -1 /* CACHED */)
+        ]))]),
+        _: 1 /* STABLE */
+      }, 8 /* PROPS */, ["onClick"]),
+      _createVNode(_component_el_button, { onClick: $setup.pause }, {
+        default: _withCtx(() => [...(_cache[5] || (_cache[5] = [
+          _createTextVNode("暂停监听", -1 /* CACHED */)
+        ]))]),
+        _: 1 /* STABLE */
+      }, 8 /* PROPS */, ["onClick"]),
+      _createElementVNode("h1", null, _toDisplayString($props.msg), 1 /* TEXT */),
+      _createElementVNode("div", null, _toDisplayString($setup.dayjs.months()), 1 /* TEXT */),
+      _createElementVNode("div", _hoisted_3, [
+        _createElementVNode("button", {
+          type: "button",
+          onClick: _cache[2] || (_cache[2] = $event => ($setup.count++))
+        }, "count is " + _toDisplayString($setup.count), 1 /* TEXT */)
+      ])
+    ])
+  ], 512 /* NEED_PATCH */))
+}
+
+import "/src/components/HelloWorld.vue?vue&type=style&index=0&scoped=e17ea971&lang.css"
+
+_sfc_main.__hmrId = "e17ea971"
+typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main)
+import.meta.hot.on('file-changed', ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file
+})
+import.meta.hot.accept(mod => {
+  if (!mod) return
+  const { default: updated, _rerender_only } = mod
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render)
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated)
+  }
+})
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper"
+export default /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render],['__scopeId',"data-v-e17ea971"],['__file',"C:/Users/Administrator/Desktop/my-vue-app/src/components/HelloWorld.vue"]])
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6Ijs7QUFRQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFFQTs7Ozs7Ozs7Ozs7QUFqQkE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFVQTtBQUdBOzs7QUFHQTtBQUNBO0FBQ0E7QUFDQTs7QUFJQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTs7O0FBR0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTs7QUFFQTtBQUNBOztBQUVBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBOztBQUVBO0FBQ0E7QUFDQTtBQUNBIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJIZWxsb1dvcmxkLnZ1ZSJdLCJzb3VyY2VzQ29udGVudCI6WyI8c2NyaXB0IHNldHVwPlxuLyoqXG4gKiDlr7zlhaUgVnVlIOeahCByZWYg5Ye95pWw77yM55So5LqO5Yib5bu65ZON5bqU5byP5Y+Y6YePXG4gKiDlr7zlhaUgZ2V0Q3VycmVudEluc3RhbmNlIOWHveaVsO+8jOeUqOS6juiOt+WPluW9k+WJjee7hOS7tuWunuS+i1xuICovXG4vKipcbiAqIOWvvOWFpSBFbGVtZW50IFBsdXMg55qEIGRheWpzIOWHveaVsO+8jOeUqOS6juaXpeacn+WkhOeQhlxuICovXG5pbXBvcnQgeyBkYXlqcyB9IGZyb20gJ2VsZW1lbnQtcGx1cyc7XG5pbXBvcnQgJ2RheWpzL2xvY2FsZS96aC1jbic7IC8vIOWvvOWFpeacrOWcsOWMluivreiogFxuaW1wb3J0ICdkYXlqcy9sb2NhbGUvZW4nOyAvLyDlr7zlhaXmnKzlnLDljJbor63oqIBcbmltcG9ydCAnZGF5anMvbG9jYWxlL2tvJzsgLy8g5a+85YWl5pys5Zyw5YyW6K+t6KiAXG5pbXBvcnQgeyB1c2VNYWluU3RvcmUgfSBmcm9tICdAL3N0b3Jlcyc7XG5pbXBvcnQgeyBzZXQgfSBmcm9tICd4ZS11dGlscyc7XG5pbXBvcnQgeyBkZSB9IGZyb20gJ2VsZW1lbnQtcGx1cy9lcy9sb2NhbGVzLm1qcyc7XG5pbXBvcnQgdGVzdENvbSBmcm9tICcuL3Rlc3RDb20udnVlJztcbmltcG9ydCB7IHVzZU1vdXNlIH0gZnJvbSAnLi4vdXRpbHMvbW91c2UnO1xuY29uc3QgeyBtb3VzZSB9ID0gdXNlTW91c2UodXNlVGVtcGxhdGVSZWYoJ2hlbGxvV29ybGQnKSk7XG5pbXBvcnQgeyBzdG9yZUNvdW50LHNldENvdW50IH0gZnJvbSAnLi4vdXRpbHMvc3RvcmUuanMnXG5cbmNvbnN0IFsgY3Qsc2N0IF0gPSBzZXRDb3VudCgpXG5cblxuY29uc3QgeyB4LCB5IH0gPSB0b1JlZnMobW91c2UpXG5jb25zdCBzdG9yZSA9IHVzZU1haW5TdG9yZSgpO1xuc3RvcmUuaW5jcmVtZW50KCk7XG5jb25zb2xlLmxvZygnc3RvcmUnLCBzdG9yZSk7XG5kZWZpbmVQcm9wcyh7XG4gIG1zZzogU3RyaW5nLFxufSk7XG5jb25zdCBjb3VudCA9IHJlZigwKTtcbmNvbnN0IHsgc3RvcCwgcmVzdW1lLCBwYXVzZSB9ID0gd2F0Y2goXG4gICgpID0+IHN0b3JlLmNvdW50LFxuICAobmV3VmFsKSA9PiB7XG4gICAgY29uc29sZS5sb2coJ3N0b3JlLmNvdW50IGNoYW5nZWQ6JywgbmV3VmFsKTtcbiAgfVxuKTtcblxuY29uc3Qgb2JqMTExID0gcmVhY3RpdmUoe1xuICBjb3VudDogMCxcbiAgbmVzdGVkOiB7XG4gICAgdmFsdWU6IDExMVxuICB9XG59KTtcblxuLy8g5L+u5aSNIHdhdGNoIOWvueixoeeahOmUmeivr+S9v+eUqFxud2F0Y2goXG4gICgpID0+IG9iajExMS5jb3VudCxcbiAgKG5ld1ZhbCwgb2xkVmFsKSA9PiB7XG4gICAgY29uc29sZS5sb2coJ0NvdW50IGNoYW5nZWQ6JywgbmV3VmFsLCBvbGRWYWwpO1xuICB9XG4pO1xuXG53YXRjaFBvc3RFZmZlY3QoKCkgPT4ge1xuICBjb25zb2xlLmxvZygn6L+Z5piv5ZyoIERPTSDmm7TmlrDkuYvlkI7ov5DooYznmoQuJyk7XG59KTtcbi8v5bC96YeP5bCR55SoIOWTjeW6lOW8j+WmguaenOS4jeaWreWPmOWMliDkvJrkuI3mlq3op6blj5FcbndhdGNoU3luY0VmZmVjdCgoKSA9PiB7XG4gIGNvbnNvbGUubG9nKCfov5nkvJrlnKjlk43lupTlvI/nirbmgIHlj5jljJbkuYvlkI7jgIFET00g5pu05paw5LmL5YmN5ZCM5q2l6L+Q6KGMLicpO1xufSk7XG53YXRjaEVmZmVjdCgoYSkgPT4ge1xuXG4gIGNvbnN0IHRpbWVyID0gc2V0VGltZW91dCgoKSA9PiB7XG5cblxuICAgIGNvbnNvbGUubG9nKCdDb3VudCBjaGFuZ2VkIHRvOicsIGNvdW50LnZhbHVlKTtcbiAgfSwgMTAwMCk7XG4gIC8v5riF55CG5Ye95pWwIOWcqOS4i+S4gOasoeWJr+S9nOeUqOi/kOihjOS5i+WJjeaIlue7hOS7tuWNuOi9veaXtuiwg+eUqFxuICBjb25zb2xlLmxvZyhjb3VudC52YWx1ZSlcblxuICBhKCgpID0+IHtcbiAgICBjb25zb2xlLmxvZygndGltZXInLCB0aW1lcilcblxuICAgIGNsZWFyVGltZW91dCh0aW1lcik7XG4gIH0pO1xuXG59KTtcbmNvbnN0IG5hbWUgPSByZWYoJ1Z1ZS5qcycpXG5cbmZ1bmN0aW9uIGdyZWV0KGEsIGV2ZW50KSB7XG4gIGNvbnNvbGUubG9nKGBIZWxsbyAke25hbWUudmFsdWV9IWApXG4gIC8vIGBldmVudGAg5pivIERPTSDljp/nlJ/kuovku7ZcbiAgaWYgKGV2ZW50KSB7XG4gICAgY29uc29sZS5sb2coZXZlbnQ/LnRhcmdldD8udGFnTmFtZSlcbiAgfVxufVxuLy/pmLLmipZcbmNvbnN0IGRlYm91bmNlID0gKGZ1bmMsIHdhaXQpID0+IHtcbiAgbGV0IHRpbWVvdXQ7XG4gIHJldHVybiBmdW5jdGlvbiAoLi4uYXJncykge1xuICAgIGNsZWFyVGltZW91dCh0aW1lb3V0KTtcbiAgICB0aW1lb3V0ID0gc2V0VGltZW91dCgoKSA9PiBmdW5jLmFwcGx5KHRoaXMsIGFyZ3MpLCB3YWl0KTtcbiAgfTtcbn07XG4vL+iKgua1gVxuY29uc3QgdGhyb3R0bGUgPSAoZnVuYywgbGltaXQpID0+IHtcbiAgbGV0IGluVGhyb3R0bGU7XG4gIHJldHVybiBmdW5jdGlvbiAoLi4uYXJncykge1xuICAgIGNvbnNvbGUubG9nKFwi8J+agCB+IHRocm90dGxlIH4gYXJnczpcIiwgYXJncylcbiAgICBpZiAoIWluVGhyb3R0bGUpIHtcbiAgICAgIGZ1bmMuYXBwbHkodGhpcywgYXJncyk7XG4gICAgICBpblRocm90dGxlID0gdHJ1ZTtcbiAgICAgIHNldFRpbWVvdXQoKCkgPT4gKGluVGhyb3R0bGUgPSBmYWxzZSksIGxpbWl0KTtcbiAgICB9XG4gIH07XG59O1xuZnVuY3Rpb24gcnVuKC4uLmEpIHtcbiAgY29uc29sZS5sb2coJ3J1bicsIGEpO1xufVxuY29uc3QgaGFuZGxlID0gdGhyb3R0bGUocnVuLCAyMDAwKTtcbmhhbmRsZSgnMTExMScpXG4vL+Wvueixoea3seaLt+i0nVxuY29uc3QgZGVlcENsb25lID0gKHZhbHVlKSA9PiB7XG4gIGlmICghdmFsdWUgfHwgdHlwZW9mIHZhbHVlICE9PSAnb2JqZWN0Jykge1xuICAgIHJldHVybiB2YWx1ZTtcbiAgfVxuICBsZXQgbWFwID0gbmV3IE1hcCgpXG5cbiAgZnVuY3Rpb24gX2RlZXBDbG9uZSh2YWx1ZSkge1xuICAgIGlmIChtYXAuaGFzKHZhbHVlKSkge1xuICAgICAgcmV0dXJuIG1hcC5nZXQodmFsdWUpXG4gICAgfVxuICAgIGxldCByZXN1bHQgPSBBcnJheS5pc0FycmF5KHZhbHVlKSA/IFtdIDoge31cbiAgICBtYXAuc2V0KHZhbHVlLCByZXN1bHQpXG4gICAgZm9yIChjb25zdCBrZXkgaW4gdmFsdWUpIHtcbiAgICAgIHJlc3VsdFtrZXldID0gdHlwZW9mIHZhbHVlW2tleV0gPT09ICdvYmplY3QnID8gX2RlZXBDbG9uZSh2YWx1ZVtrZXldKSA6IHZhbHVlW2tleV07XG4gICAgfVxuICAgIHJldHVybiByZXN1bHRcbiAgfVxuICByZXR1cm4gX2RlZXBDbG9uZSh2YWx1ZSlcbn1cbmZvciAoY29uc3QgaXRlbSBvZiBbJ2EnLCAnYiddKSB7XG4gIGNvbnNvbGUubG9nKFwi8J+agCB+IGl0ZW06XCIsIGl0ZW0pXG4gIC8vIGNvbnNvbGUubG9nKGl0ZW0pXG59XG5jb25zdCBsaWtlcyA9IHJlZigxMCk7XG5jb25zdCBjYWxsYmFjayA9ICguLi5wYXlsb2FkKSA9PiB7XG4gIGNvbnNvbGUubG9nKCdFdmVudCByZWNlaXZlZCB3aXRoIHBheWxvYWQ6JywgcGF5bG9hZCk7XG59O1xuY29uc3QgbSA9IHJlYWN0aXZlKHtcbiAgdmFsdWU6IDAsXG4gIGtleTogJ2tleSdcbn0pO1xuY29uc3QgdXBkYXRhID0gKHZhbCkgPT4ge1xuICAvLyBtLnZhbHVlID0gdmFsXG4gIGNvbnNvbGUubG9nKCdVcGRhdGEgZXZlbnQgcmVjZWl2ZWQgd2l0aCB2YWx1ZTonLCB2YWwpO1xufTtcbmNvbnN0IGxvY2F0aW9uID0gcmVmKCdOb3J0aCBQb2xlJylcblxuZnVuY3Rpb24gdXBkYXRlTG9jYXRpb24odmFsKSB7XG4gIGxvY2F0aW9uLnZhbHVlID0gdmFsXG59XG5cbnByb3ZpZGUoJ2xvY2F0aW9uJywge1xuICBsb2NhdGlvbixcbiAgdXBkYXRlTG9jYXRpb25cbn0pXG48L3NjcmlwdD5cblxuPHRlbXBsYXRlPlxuICA8ZGl2IHJlZj1cImhlbGxvV29ybGRcIiBjbGFzcz1cImZsZXggZmxleC1jb2wgaXRlbXMtY2VudGVyXCIgc3R5bGU9XCJiYWNrZ3JvdW5kLWNvbG9yOiBhcXVhXCI+XG4gICAgPGRpdj5Gcm9tIEE6IHt7IGN0IH19PC9kaXY+XG4gICAgXG4gICAgPGRpdj57eyB4IH19IC0ge3sgeSB9fTwvZGl2PlxuXG4gICAgPHRlc3RDb20gaWQ9XCJjdXN0b20tbGF5b3V0XCIgOnN0eWxlPVwieyB3aWR0aDogJzMwMHB4JywgYmFja2dyb3VuZDogJ3JlZCcsIGNvbG9yOiAnIzAwMCcsIHBhZGRpbmc6ICcxMHB4JyB9XCJcbiAgICAgIEBjbGljaz1cInJ1blwiIHYtbW9kZWw9XCJtXCIgQHNvbWUtZXZlbnQ9XCJjYWxsYmFja1wiIDpsaWtlcz1cImxpa2VzXCIgOmdyZWV0aW5nLW1lc3NhZ2U9XCInaGVsbG8nXCIgOnRpdGxlPVwiJ3l5YidcIiAvPlxuICAgIDxkaXYgY2xhc3M9XCJjb250YWluZXJcIj5cbiAgICAgIDxlbC1idXR0b24gQGNsaWNrPVwiKCkgPT4geyBsaWtlcysrOyBjb25zb2xlLmxvZyhsaWtlcykgfVwiPnt7IGxpa2VzIH19PC9lbC1idXR0b24+XG4gICAgICA8ZWwtYnV0dG9uIEBjbGljaz1cInN0b3BcIj7lgZzmraI8L2VsLWJ1dHRvbj5cbiAgICAgIDxlbC1idXR0b24gQGNsaWNrPVwicmVzdW1lXCI+5oGi5aSN55uR5ZCsPC9lbC1idXR0b24+XG4gICAgICA8ZWwtYnV0dG9uIEBjbGljaz1cInBhdXNlXCI+5pqC5YGc55uR5ZCsPC9lbC1idXR0b24+XG4gICAgICA8aDE+e3sgbXNnIH19PC9oMT5cbiAgICAgIDxkaXY+e3sgZGF5anMubW9udGhzKCkgfX08L2Rpdj5cbiAgICAgIDxkaXYgY2xhc3M9XCJjYXJkXCI+XG4gICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIEBjbGljaz1cImNvdW50KytcIj5jb3VudCBpcyB7eyBjb3VudCB9fTwvYnV0dG9uPlxuICAgICAgPC9kaXY+XG4gICAgPC9kaXY+XG4gIDwvZGl2PlxuPC90ZW1wbGF0ZT5cblxuPHN0eWxlIHNjb3BlZD5cbi5jb250YWluZXIge1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAyMDBweDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2NjYztcbn1cbjwvc3R5bGU+XG4iXSwiZmlsZSI6IkM6L1VzZXJzL0FkbWluaXN0cmF0b3IvRGVza3RvcC9teS12dWUtYXBwL3NyYy9jb21wb25lbnRzL0hlbGxvV29ybGQudnVlIn0=

@@ -1,0 +1,81 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm vite",
+    "build": "pnpm vite build",
+    "preview": "pnpm vite preview",
+    "clean": "pnpm store prune && rmdir /s /q node_modules",
+    "clean:cache": "rmdir /s /q node_modules\\.cache",
+    "reinstall": "pnpm install",
+    "dev:local": "VITE_ENV=local vite",
+    "dev:test": "VITE_ENV=test vite",
+    "dev:prod": "VITE_ENV=prod vite",
+    "build:local": "VITE_ENV=local vite build",
+    "build:test": "VITE_ENV=test vite build",
+    "build:prod": "VITE_ENV=prod vite build",
+    "lint": "eslint --ext .js,.vue src"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@vueuse/core": "^13.9.0",
+    "axios": "^1.12.2",
+    "chrome-devtools-mcp": "^0.12.1",
+    "dayjs": "^1.11.18",
+    "dexie": "^4.2.1",
+    "element-plus": "^2.11.3",
+    "pinia": "^3.0.3",
+    "vite": "^4.0.0",
+    "vite-plugin-html": "^3.2.2",
+    "vue": "^3.5.21",
+    "vue-router": "^4.6.3",
+    "vxe-pc-ui": "^4.9.41",
+    "vxe-table": "~4.16.20",
+    "vxe-table-plugin-element": "^4.0.4",
+    "xe-utils": "^3.7.9"
+  },
+  "devDependencies": {
+    "@iconify-json/ep": "^1.2.3",
+    "@iconify-json/mdi": "^1.2.3",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.39.0",
+    "eslint-define-config": "^2.1.0",
+    "eslint-plugin-vue": "^10.5.1",
+    "gifsicle": "^7.0.1",
+    "imagemin": "^9.0.1",
+    "jsdom": "^27.0.1",
+    "mozjpeg": "^8.0.0",
+    "optipng": "^4.2.0",
+    "pngquant": "^4.2.0",
+    "postcss": "^8.5.6",
+    "rollup-plugin-visualizer": "^6.0.4",
+    "sass-embedded": "^1.93.2",
+    "tailwindcss": "^3.4.17",
+    "terser": "^5.44.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "unplugin-auto-import": "^0.11.5",
+    "unplugin-icons": "^22.4.2",
+    "unplugin-vue-components": "^0.24.1",
+    "vite": "npm:rolldown-vite@7.1.12",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-imagemin": "^0.6.1",
+    "vite-plugin-lazy-import": "^1.0.7",
+    "vitest": "^4.0.4",
+    "webp": "^0.0.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.1.12"
+    },
+    "ignoredBuiltDependencies": [
+      "gifsicle",
+      "mozjpeg",
+      "webp"
+    ]
+  }
+}

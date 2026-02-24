@@ -1,0 +1,9 @@
+@for $i from 1 through 36 {
+    .item:nth-child(#{$i}){
+        background: hsl(10*$i 50% 50%)
+    }
+}
+.layer{
+    position: fixed;
+    $size:100px;
+}

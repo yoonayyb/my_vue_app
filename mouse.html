@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>鼠标事件拖动元素</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .draggable-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border: 3px dashed rgba(255,255,255,0.3);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .draggable-item {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            user-select: none;
+            transition: box-shadow 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .draggable-item.dragging {
+            z-index: 1000;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            transform: scale(1.05);
+            cursor: grabbing;
+        }
+        
+        .item-1 { background: linear-gradient(45deg, #FF6B6B, #FF8E53); left: 50px; top: 50px; }
+        .item-2 { background: linear-gradient(45deg, #4ECDC4, #44A08D); left: 200px; top: 150px; }
+        .item-3 { background: linear-gradient(45deg, #FFD93D, #FF9A3D); left: 100px; top: 300px; }
+        .item-4 { background: linear-gradient(45deg, #6A11CB, #2575FC); left: 300px; top: 80px; }
+        
+        .coordinates {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+        .repeating {
+            background: repeating-linear-gradient(90deg,
+             #f7f3f3 0px,#f7f3f3 10px, #84ee64 21px, #7253ff 31px,
+                #4ecdc4 51px, #121313 81px);
+                background-size: 80px;
+                background-repeat: no-repeat;
+           
+        }
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+            linear-gradient(90deg,rgba(243, 12, 23, 0.048) 1px, transparent 1px),
+            /* linear-gradient(90deg, rgba(248, 5, 5, 0.966) 1px, transparent 1px), */
+            linear-gradient(0deg,rgba(4, 29, 255, 0.1) 1px, transparent 1px);
+         
+            background-repeat: repeat;
+            background-size: 40px 20px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-box repeating">重复渐变</div>
+    <h1 style="color: white; text-align: center;">鼠标事件拖动演示</h1>
+    <p style="color: white; text-align: center; opacity: 0.8;">点击并拖动彩色方块</p>
+    
+    <div class="coordinates" id="coords">坐标: (0, 0)</div>
+    
+    <div class="draggable-container" id="container">
+        <div class="grid-lines"></div>
+        <div class="draggable-item item-1" data-id="1">元素 1</div>
+        <div class="draggable-item item-2" data-id="2">元素 2</div>
+        <div class="draggable-item item-3" data-id="3">元素 3</div>
+        <div class="draggable-item item-4" data-id="4">元素 4</div>
+    </div>
+
+    <script>
+        class MouseDraggable {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.draggedItem = null;
+                this.isDragging = false;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                this.coordsElement = document.getElementById('coords');
+                
+                this.init();
+            }
+            
+            init() {
+                // 为所有可拖动元素添加事件监听
+                const draggableItems = this.container.querySelectorAll('.draggable-item');
+                
+                draggableItems.forEach(item => {
+                    // 鼠标按下
+                    item.addEventListener('mousedown', (e) => this.startDrag(e, item));
+                    
+                    // 防止文字选择
+                    item.addEventListener('selectstart', (e) => {});
+                });
+                
+                // 文档级别的事件监听
+                document.addEventListener('mousemove', (e) => this.drag(e));
+                document.addEventListener('mouseup', () => this.stopDrag());
+                
+                // 触摸设备支持
+                draggableItems.forEach(item => {
+                    item.addEventListener('touchstart', (e) => this.startTouchDrag(e, item));
+                });
+                document.addEventListener('touchmove', (e) => this.touchDrag(e));
+                document.addEventListener('touchend', () => this.stopDrag());
+            }
+            
+            startDrag(e, item) {
+                // e.preventDefault();
+                this.isDragging = true;
+                this.draggedItem = item;
+                this.draggedItem.classList.add('dragging');
+                
+                // 计算鼠标位置与元素左上角的偏移
+                const rect = this.draggedItem.getBoundingClientRect();
+                this.offsetX = e.clientX - rect.left;
+                
+                this.offsetY = e.clientY - rect.top;
+                console.log("🚀 ~ MouseDraggable ~ startDrag ~ e.clientY:", e.clientY)
+                console.log("🚀 ~ MouseDraggable ~ startDrag ~ rect:", rect.top)
+                
+                this.updateCoords(e.clientX, e.clientY, '开始拖动');
+            }
+            
+            
+            startTouchDrag(e, item) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                
+                this.isDragging = true;
+                this.draggedItem = item;
+                this.draggedItem.classList.add('dragging');
+                
+                const rect = this.draggedItem.getBoundingClientRect();
+                this.offsetX = touch.clientX - rect.left;
+                this.offsetY = touch.clientY - rect.top;
+                
+                this.updateCoords(touch.clientX, touch.clientY, '开始触摸拖动');
+            }
+            
+            drag(e) {
+                if (!this.isDragging || !this.draggedItem) return;
+                
+                // e.preventDefault();
+                
+                // 计算新位置（相对于容器）
+                const containerRect = this.container.getBoundingClientRect();
+                const itemRect = this.draggedItem.getBoundingClientRect();
+                
+                let newX = e.clientX - containerRect.left - this.offsetX;
+                let newY = e.clientY - containerRect.top - this.offsetY;
+                
+                // 边界检查
+                newX = Math.max(0, Math.min(newX, containerRect.width - itemRect.width));
+                newY = Math.max(0, Math.min(newY, containerRect.height - itemRect.height));
+                
+                // 应用新位置
+                this.draggedItem.style.left = newX + 'px';
+                this.draggedItem.style.top = newY + 'px';
+                
+                this.updateCoords(e.clientX, e.clientY, '拖动中');
+            }
+            
+            touchDrag(e) {
+                if (!this.isDragging || !this.draggedItem) return;
+                
+                e.preventDefault();
+                const touch = e.touches[0];
+                
+                const containerRect = this.container.getBoundingClientRect();
+                const itemRect = this.draggedItem.getBoundingClientRect();
+                
+                let newX = touch.clientX - containerRect.left - this.offsetX;
+                let newY = touch.clientY - containerRect.top - this.offsetY;
+                
+                newX = Math.max(0, Math.min(newX, containerRect.width - itemRect.width));
+                newY = Math.max(0, Math.min(newY, containerRect.height - itemRect.height));
+                
+                this.draggedItem.style.left = newX + 'px';
+                this.draggedItem.style.top = newY + 'px';
+                
+                this.updateCoords(touch.clientX, touch.clientY, '触摸拖动');
+            }
+            
+            stopDrag() {
+                if (this.isDragging && this.draggedItem) {
+                    this.draggedItem.classList.remove('dragging');
+                    this.updateCoords(0, 0, '拖动结束');
+                    this.showDropEffect();
+                }
+                
+                this.isDragging = false;
+                this.draggedItem = null;
+                this.offsetX = 0;
+                this.offsetY = 0;
+            }
+            
+            updateCoords(x, y, action) {
+                const item = this.draggedItem;
+                const itemX = item ? parseInt(item.style.left) || 0 : 0;
+                const itemY = item ? parseInt(item.style.top) || 0 : 0;
+                
+                this.coordsElement.innerHTML = `
+                    ${action}<br>
+                    鼠标: (${x}, ${y})<br>
+                    元素: (${itemX}, ${itemY})<br>
+                    ${item ? `ID: ${item.dataset.id}` : ''}
+                `;
+            }
+            
+            showDropEffect() {
+                if (!this.draggedItem) return;
+                
+                const effect = document.createElement('div');
+                effect.style.cssText = `
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: #4CAF50;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: ripple 0.6s ease-out;
+                `;
+                
+                const rect = this.draggedItem.getBoundingClientRect();
+                effect.style.left = (rect.left + rect.width / 2 - 5) + 'px';
+                effect.style.top = (rect.top + rect.height / 2 - 5) + 'px';
+                
+                document.body.appendChild(effect);
+                
+                setTimeout(() => effect.remove(), 600);
+            }
+        }
+        
+        // 添加涟漪动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                0% { transform: scale(1); opacity: 1; }
+                100% { transform: scale(10); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            new MouseDraggable('container');
+        });
+    </script>
+</body>
+</html>

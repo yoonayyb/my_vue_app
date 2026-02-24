@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="box1"
+    style="width: 100px; height: 100px; background-color: lightblue; margin-bottom: 20px; cursor: pointer;">
+    点击我
+    <script>
+      let box1 = document.getElementById('box1');
+      box1.addEventListener('click', () => {
+        console.log('box1 clicked');
+      });
+      var maxArea = function (height) {
+        let l = 0, r = height.length - 1, mianji = 0
+        while (l < r) {
+          let mj = 0, width = r - l
+
+
+          if (height[l] < height[r]) {
+            mj = height[l] * width
+            l++
+          } else {
+            mj = height[r] * width
+            r--
+          }
+          mianji = Math.max(mj, mianji)
+        }
+        return mianji
+      };
+      console.log(maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]));
+      var moveZeroes = function (nums) {
+        if (nums.length <= 1) return nums
+        let l = 0, r = 0
+        while (r <= nums.length - 1) {
+          if (nums[r] !== 0) {
+            nums[l] = nums[r];
+
+            l++
+          }
+          r++
+
+        }
+
+        while (l <= nums.length - 1) {
+          nums[l] = 0
+          l++
+        }
+        return nums
+      };
+      console.log("🚀 ~ moveZeroes ~ moveZeroes:", moveZeroes([0, 1, 0, 3, 12]))
+      console.log("🚀 ~ moveZeroes ~ moveZeroes:", moveZeroes([1, 0, 1]))
+      var threeSum = function (nums) {
+        nums.sort()
+        console.log("🚀 ~ threeSum ~ nums:", nums)
+
+        let arr = []
+        let l = 0
+        while (l < nums.length - 2) {
+          let a = nums[l]
+          let target = -a
+          //转换成两数组之和
+          let left = l + 1
+          let right = nums.length - 1
+          while (left < right) {
+            let sum = nums[left] + nums[right]
+            if (sum === target) {
+
+              arr.push([a, nums[left], nums[right]])
+              //去重
+              if (nums[left] === nums[left + 1]) {
+                while (nums[left] === nums[left + 1]) {
+                  left++
+                }
+              }
+              if (nums[right] === nums[right - 1]) {
+                while (nums[right] === nums[right - 1]) {
+                  right--
+                }
+              }
+              left++
+              right--
+            } else if (sum < target) {
+              left++
+            } else {
+              right--
+            }
+          }
+          l++
+        }
+        let strArr = new Set();
+        arr.forEach(res => {
+          let strItem = res.sort().join(',')
+
+          if (!strArr.has(strItem)) {
+            strArr.add(strItem)
+          }
+
+
+        })
+
+        strArr = Array.from(strArr)
+        strArr = strArr.map(item => {
+          let itemArr = item.split(',').map(num => Number(num))
+          return itemArr
+        })
+
+        return strArr
+      };
+      console.log(threeSum([-2, 0, 1, 1, 2]))
+      /**
+       * @param {number[]} height
+       * @return {number}
+       */
+      var trap = function (height) {
+        let l = 0, r = height.length - 1;
+        let leftMax = 0, rightMax = 0, sum = 0;
+
+        while (l <= r) {
+          if (height[l] < height[r]) {
+            leftMax = Math.max(leftMax, height[l]);
+            sum += leftMax - height[l];
+            l++;
+          } else {
+            rightMax = Math.max(rightMax, height[r]);
+            sum += rightMax - height[r];
+            r--;
+          }
+        }
+        return sum;
+      };
+      console.log('trap', trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]));
+      var groupAnagrams = function (strs) {
+        let map = new Map()
+        for (let str of strs) {
+          let key = str.split('').sort().join('')
+          if (map.has(key)) {
+            map.get(key).push(str)
+          } else {
+            map.set(key, [str])
+          }
+        }
+        let arr = [...map.values()]
+        return arr
+      };
+      groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])
+      var longestConsecutive = function (nums) {
+
+        nums = [...new Set(nums)].sort((a, b) => a - b)
+        if (nums.length === 0 || nums.length === 1) return nums.length
+
+        console.log("🚀 ~ longestConsecutive ~ nums:", nums)
+        const length = nums.length
+        let count = 1
+        let pre = 1
+        for (let i = 0; i < length; i++) {
+          if (nums[i] + 1 === nums[i + 1]) {
+            pre++
+            count = Math.max(count, pre)
+          } else {
+            pre = 1
+          }
+
+        }
+        console.log("🚀 ~ longestConsecutive ~ count:", count)
+
+        return count
+      };
+      // console.log(longestConsecutive([0,0]));
+      // console.log(longestConsecutive([1,100]));
+      // console.log(longestConsecutive([1,0,1,2]));
+      // console.log(longestConsecutive([100,4,200,1,3,2]));
+      // console.log(longestConsecutive([0,3,7,2,5,8,4,6,0,1]));
+      // console.log(longestConsecutive([9,1,4,7,3,-1,0,5,8,-1,6]));
+      var lengthOfLongestSubstring = function (s) {
+        let set = new Set();
+        let l = 0, maxLength = 0;
+
+        for (let r = 0; r < s.length; r++) {
+
+          while (set.has(s[r])) {
+            set.delete(s[l]);
+            l++;
+          }
+          set.add(s[r]);
+          maxLength = Math.max(maxLength, r - l + 1);
+        }
+
+        return maxLength;
+      };
+      // console.log("🚀 ~ lengthOfLongestSubstring :", lengthOfLongestSubstring("abcabcbb"));
+      // console.log("🚀 ~ lengthOfLongestSubstring :", lengthOfLongestSubstring("bbbbb"));
+      // console.log("🚀 ~ lengthOfLongestSubstring :", lengthOfLongestSubstring("pwwkew"));
+      // console.log("🚀 ~ lengthOfLongestSubstring :", lengthOfLongestSubstring("dvdf"));
+
+      var findAnagrams = function (s, p) {
+        console.log("🚀 ~ findAnagrams ~ s:", s.length)
+        let result = [];
+        let length = p.length;
+        let point = 0
+        let pMap = new Map();
+        let sMap = new Map();
+        for (let char of p) {
+          if (pMap.has(char)) {
+            pMap.set(char, pMap.get(char) + 1);
+          } else {
+            pMap.set(char, 1);
+          }
+        }
+        _compareMaps = (map1, map2) => {
+          // if(map1.size !== map2.size) return false;
+          for (let [key, value] of map1) {
+            if (map2.get(key) !== value) {
+              return false;
+            }
+          }
+          return true;
+        }
+        while (point <= s.length) {
+          if (point >= length) {
+
+            if (_compareMaps(pMap, sMap)) {
+
+              result.push(point - length);
+            }
+            // 移除左侧字符
+            sMap.set(s[point - length], sMap.get(s[point - length]) - 1);
+          }
+          sMap.set(s[point], (sMap.get(s[point]) || 0) + 1);
+
+          point++
+        }
+
+        return result;
+      };
+      // console.log(findAnagrams("cbaebabacd", "abc"));
+      // console.log(findAnagrams("abab", "ab"));
+      // console.log(findAnagrams("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aa"));
+
+      var subarraySum = function (nums, k) {
+        if (nums.length === 0) return 0;
+
+        let count = 0;
+        let sum = 0;
+        const prefixSumMap = new Map();
+        prefixSumMap.set(0, 1); // 初始化前缀和为 0 的情况
+
+        for (let i = 0; i < nums.length; i++) {
+          sum += nums[i]; // 计算当前前缀和
+
+          // 检查是否存在前缀和为 sum - k 的子数组
+          if (prefixSumMap.has(sum - k)) {
+            count += prefixSumMap.get(sum - k);
+          }
+
+          // 更新当前前缀和的出现次数
+          prefixSumMap.set(sum, (prefixSumMap.get(sum) || 0) + 1);
+        }
+
+        return count;
+      };
+      // console.log("🚀 ~ subarraySum :", subarraySum([1, 2, 3], 3))
+      // console.log("🚀 ~ subarraySum :", subarraySum([-1, -1, 1], 0))
+
+      // var maxSlidingWindow = function (nums, k) {
+      //   let max = []
+      //   let l = 0, r = k;
+      //   let pre = 0
+
+      //   if(nums.length === 1) return [nums[0]] 
+      //   while (r <= nums.length) {
+
+
+      //     pre = Math.max(...nums.slice(l, r))
+
+      //     r++
+      //     l++
+      //     max.push(pre)
+
+      //   }
+      //   return max
+      // };
+
+      // var maxSlidingWindow = function (nums, k) {
+      //   if (nums.length === 0 || k === 0) return [];
+      //   if (nums.length === 1) return [nums[0]];
+
+      //   const deque = []; // 双端队列，存储元素的索引
+      //   const result = [];
+      //   debugger
+      //   for (let i = 0; i < nums.length; i++) {
+      //     // 移除队列中不在窗口范围内的元素
+      //     if (deque.length > 0 && deque[0] < i - k + 1) {
+      //       deque.shift();
+      //     }
+
+      //     // 移除队列中小于当前元素的所有元素
+      //     while (deque.length > 0 && nums[deque[deque.length - 1]] < nums[i]) {
+      //       deque.pop();
+      //     } 
+
+      //     // 将当前元素的索引加入队列
+      //     deque.push(i);
+
+      //     // 当窗口形成时，将当前窗口的最大值加入结果
+      //     if (i >= k - 1) {
+      //       result.push(nums[deque[0]]);
+      //     }
+      //   }
+
+      //   return result;
+      // };
+      // console.log('maxSlidingWindow', maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3));
+      // console.log('maxSlidingWindow', maxSlidingWindow([1], 1));
+      // console.log('maxSlidingWindow', maxSlidingWindow([1, -1], 1));
+
+      //   var minWindow = function(s, t) {
+      //     if(s.length<t.length) return ''
+      //   let map = new Map()
+      //   let str = ''
+      //   for(let i = 0;i<s.length;i++){
+      //       map.set(s[i],[...(map.get(s[i])||[]),i])
+      //   } 
+      //   console.log("🚀 ~ minWindow ~ map:", map)
+      //   console.log("🚀 ~ s ~ s:", s)
+      //   let arr = []
+      //   for(let j = 0;j<t.length;j++){
+      //       if(!map.has(t[j])||map.get(t[j]).length===0) return ''
+      //       arr.push(map.get(t[j]))
+      //       // let arr = map.get(t[j])
+      //       // arr.shift()
+      //       // map.set(t[j],arr)
+      //   }
+      //   console.log("🚀 ~ minWindow ~ arr:", arr)
+
+      //   return str
+      // };
+      // minWindow("ADOBECODEBANC", "ABC")
+
+
+      // var merge = function(intervals) {
+      //   if (intervals.length <= 1) return intervals;
+      //   // 按照区间的起始位置进行排序
+      //   intervals.sort((a, b) => a[0] - b[0]);
+      //   const merged = [];
+      //   let l = 1
+      //   while(l<intervals.length){
+      //     let lastInterval = intervals[l - 1];
+      //     let currentInterval = intervals[l];
+      //     // 如果当前区间的起始位置小于等于上一个区间的结束位置，说明有重叠
+
+      //     if (currentInterval[0] <= lastInterval[1]) {
+      //       // 合并区间，更新上一个区间的结束位置
+      //       lastInterval[1] = Math.max(lastInterval[1], currentInterval[1]);
+      //       intervals[l] = lastInterval
+      //       if(l === intervals.length -1){
+      //         merged.push(lastInterval);
+      //       }
+      //     } else {
+      //       // 没有重叠，直接添加当前区间到结果中
+      //       merged.push(lastInterval);
+      //       if(l === intervals.length -1){
+      //         merged.push(currentInterval);
+      //       }
+      //     }
+      //     l++
+      //   }
+      //   return merged
+      // };  
+      // // console.log(merge([[1,3],[2,6],[8,10],[12,18]]));
+      // console.log(merge([[1,4],[4,5]]));
+
+
+      // var rotate = function (nums, k) {
+      //   if( k<1 )return nums
+      //   let index = k % nums.length
+      //   console.log("🚀 ~ rotate ~ index:", index)
+
+      //   nums.unshift(...nums.splice(nums.length - index, index))
+
+      //   return nums
+      // };
+      // console.log(rotate([1, 2, 3, 4, 5, 6, 7], 3));
+      // console.log(rotate([1, 2], 7));
+      //   var productExceptSelf = function (nums) {
+      //     const n = nums.length;
+      //     const output = new Array(n).fill(1);
+
+
+      //     // 计算左侧乘积
+      //     let leftProduct = 1;
+      //     for (let i = 0; i < n; i++) {
+      //         output[i] = leftProduct;
+      //         leftProduct *= nums[i];
+      //     }
+      //     // 计算右侧乘积并更新结果
+      // let rightProduct = 1;
+
+      // for (let i = n - 1; i >= 0; i--) {
+
+
+      //     output[i] *= rightProduct;
+      //     rightProduct *= nums[i];
+      //   }
+      //     console.log("🚀 ~ productExceptSelf ~ rightProduct:", rightProduct)
+      //     console.log("🚀 ~ productExceptSelf ~ leftProduct:", leftProduct)
+      //     return output
+      //   };
+      //   console.log(productExceptSelf([1, 2, 3, 4]));
+      // var firstMissingPositive = function (nums) {
+      //   nums.sort((a, b) => a - b)
+      //   nums = nums.filter(v => v > 0)
+      //   if (nums[0] > 1 || nums[nums.length - 1] < 1 || nums.length === 0) return 1
+
+      //   let result = 0 ;
+      //   for (let i = 1; i < nums.length; i++) {
+      //     if (nums[i] - nums[i-1] > 1) {
+
+      //       return result =   nums[i-1] + 1
+      //     }
+      //   }
+      //   result = result || nums[nums.length - 1] + 1
+      //   return result
+      // };
+      // console.log("🚀 ~ firstMissingPositive", firstMissingPositive([0]))
+      // console.log("🚀 ~ firstMissingPositive", firstMissingPositive([1, 2, 0]))
+      // console.log("🚀 ~ firstMissingPositive", firstMissingPositive([3, 4, -1, 1]))
+      // console.log("🚀 ~ firstMissingPositive", firstMissingPositive([7, 8, 9, 11, 12]))
+      // console.log("🚀 ~ firstMissingPositive", firstMissingPositive([-1,-2,-60,40,43]))
+      //   var getIntersectionNode = function(headA, headB) {
+      //     if (headA === null || headB === null) {
+      //         return null;
+      //     }
+      //     let pA = headA, pB = headB;
+      //     while (pA !== pB) {
+      //         pA = pA === null ? headB : pA.next;
+      //         pB = pB === null ? headA : pB.next;
+      //     }
+      //     return pA;
+
+      // };
+      // console.log('getIntersectionNode', getIntersectionNode());
+      // function permuteOptimal(nums) {
+      //   let result = [[...nums]]
+      //   for(let i = 0;i<nums.length;i++){
+      //     let left = []
+      //     for (let j = 1;j<result.length; j++) {
+      //       left.push([...result[j], num]);
+      //     }
+
+      //     result.push(left)
+      //   }
+      // }
+      // console.log("🚀 ~ permuteOptimal ~ permuteOptimal:", permuteOptimal([1,2,3]))
+
+
+      // function subsetsIterative(nums) {
+      //   let result = [[]]; // 从空集开始
+
+      //   for (const num of nums) {
+      //     // 为每个现有子集添加新元素
+      //     const newSubsets = [];
+      //     for (const subset of result) {
+      //       newSubsets.push([...subset, num]);
+      //     }
+      //     result = result.concat(newSubsets);
+      //   }
+
+      //   return result;
+      // }
+
+      // // 测试
+      // console.log(subsetsBitmask([1, 2, 3]));
+      // function subsets(nums) {
+      //   const result = []; // 用于存储所有子集
+
+      //   function backtrack(start, path) {
+      //     // 每次递归都将当前路径加入结果
+      //     result.push([...path]);
+
+      //     // 从当前索引开始，依次尝试选择每个元素
+      //     for (let i = start; i < nums.length; i++) {
+      //       // 做选择：将当前元素加入路径
+      //       path.push(nums[i]);
+
+      //       // 递归调用，继续生成子集
+      //       backtrack(i + 1, path);
+            
+      //       // 撤销选择：将当前元素从路径中移除
+      //       path.pop();
+      //     }
+      //   }
+
+      //   backtrack(0, []); // 从索引 0 开始，路径初始化为空
+      //   return result;
+      // }
+
+      // // 测试
+      // console.log(subsets([1, 2, 3]));
+      // function fibonacci(n) {
+      //   if (n <= 0) return 0; // 如果 n <= 0，返回 0
+      //   if (n === 1) return 1; // 如果 n === 1，返回 1
+
+      //   // 初始化动态规划数组
+      //   const dp = new Array(n + 1).fill(0);
+      //   dp[0] = 0; // F(0) = 0
+      //   dp[1] = 1; // F(1) = 1
+
+      //   // 通过迭代计算 F(n)
+
+      //   for (let i = 2; i <= n; i++) {
+      //     dp[i] = dp[i - 1] + dp[i - 2]; // F(n) = F(n-1) + F(n-2)
+      //   }
+
+      //   return dp[n]; // 返回 F(n)
+      // }
+
+      // // 测试
+      // // console.log(fibonacci(0)); // 输出: 0
+      // // console.log(fibonacci(1)); // 输出: 1
+      // // console.log(fibonacci(5)); // 输出: 5
+      // console.log(fibonacci(10)); // 输出: 55
+      // var permute = function (nums) {
+      //   let result = []
+
+      //   _backtrack = (path, used) => {
+
+      //     if (path.length === nums.length) {
+
+      //       result.push([...path]);
+
+
+      //       return
+      //     }
+      //     for (let i = 0; i < nums.length; i++) {
+      //       if (used[i]) continue;
+      //       used[i] = true
+      //       path.push(nums[i])
+      //       _backtrack(path, used)
+      //       //回溯
+      //       path.pop()
+      //       used[i] = false
+      //     }
+      //   }
+
+      //   _backtrack([], new Array(nums.length).fill(false))
+
+
+
+      //   return result
+      // };
+
+      // // // 测试
+      // console.log(permute([1, 2, 3]));
+      // var letterCombinations = function (digits) {
+      //   if ((!digits)) return []
+      //   let map = new Map([
+      //     [2, 'abc'],
+      //     [3, 'def'],
+      //     [4, 'ghi'],
+      //     [5, 'jkl'],
+      //     [6, 'mno'],
+      //     [7, 'pqrs'],
+      //     [8, 'tuv'],
+      //     [9, 'wxyz']
+      //   ])
+        
+      //   let result = []
+        
+      //   let digitsToArray = [] //[[a,b,c],[d,e,f],[g,h,i]]
+      //   _backtrack = (index, path) => {
+      //     if (path.length === digits.length) {
+      //       result.push(path.join(''))
+      //       return
+      //     }
+      //     let digit = Number(digits[index])
+      //     let letters = map.get(digit)
+      //     for (let letter of letters) {
+      //       path.push(letter)
+      //       _backtrack(index + 1, path)
+      //       path.pop()
+      //     }
+           
+      //   }
+      //   _backtrack(0, [])
+      //   console.log("🚀 ~ letterCombinations ~ result:", result)
+
+       
+
+      // };
+      // letterCombinations("23")
+      // var combinationSum = function(candidates, target) {
+      //   let result = []
+      //   _backtrack = (start, path, sum) => {
+      //     if (sum === target) {
+      //       result.push([...path])
+      //       return
+      //     }
+      //     if (sum > target) {
+      //       return
+      //     }
+      //     for (let i = start; i < candidates.length; i++) {
+      //       path.push(candidates[i])
+      //       sum += candidates[i]
+            
+      //       _backtrack(i, path, sum)
+      //       path.pop()
+      //       sum -= candidates[i]
+      //     }
+      //   }
+      //   _backtrack(0, [], 0)
+      //   return result
+      // };
+      // console.log(combinationSum([2,3,6,7],7));
+
+    </script>
+</body>
+
+</html>
