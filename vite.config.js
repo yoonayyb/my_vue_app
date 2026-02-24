@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
         '@stores': path.resolve(__dirname, 'src/stores'),
       },
     },
-    base: '/',
+    base: env.VITE_PUBLIC_PATH,
     build: {
       // 生产环境配置
       minify: 'terser', // 使用 terser 进行压缩
