@@ -3,14 +3,15 @@ version: 2.1
 jobs:
   deploy:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/base:2022.05
     steps:
       - checkout
       - run:
-          name: Deploy to Baota Server
+          name: Deploy to Aliyun ECS
           command: |
-            ssh admin@8.130.51.110 "mkdir -p /www/wwwroot/myapp"
-            scp -r ./* admin@8.130.51.110:/www/wwwroot/myapp
+            scp -i $ALIYUN_SSH_KEY ./your-app-package.tar.gz $ALIYUN_USER@$ALIYUN_HOST:/path/to/deploy
+            ssh -i $ALIYUN_SSH_KEY $ALIYUN_USER@$ALIYUN_HOST 'cd /path/to/deploy && tar -xzvf your-app-package.tar.gz && ./deploy-script.sh'
+
 workflows:
   version: 2
   deploy:
