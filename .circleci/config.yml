@@ -9,8 +9,8 @@ jobs:
       - run:
           name: Deploy to Baota Server
           command: |
-            ssh yyb@8.130.51.110 "mkdir -p /www/wwwroot/myapp"
-            scp -r ./* yyb@8.130.51.110:/www/wwwroot/myapp
+            ssh admin@8.130.51.110 "mkdir -p /www/wwwroot/myapp"
+            scp -r ./* admin@8.130.51.110:/www/wwwroot/myapp
 workflows:
   version: 2
   deploy:
