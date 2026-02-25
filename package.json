@@ -17,7 +17,8 @@
     "build:test": "VITE_ENV=test vite build",
     "build:prod": "VITE_ENV=prod vite build",
     "lint": "eslint --ext .js,.vue src",
-    "lint:fix": "eslint --ext .js,.ts,.vue src --fix"
+    "lint:fix": "eslint --ext .js,.ts,.vue src --fix",
+    "deploy":"sh ./scripts/deploy.sh"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
