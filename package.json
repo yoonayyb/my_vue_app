@@ -18,7 +18,7 @@
     "build:prod": "VITE_ENV=prod vite build",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --ext .js,.ts,.vue src --fix",
-    "deploy":"sh ./scripts/deploy.sh"
+    "deploy": "sh ./scripts/deploy.sh"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -29,10 +29,13 @@
     "dexie": "^4.2.1",
     "element-plus": "^2.11.3",
     "pinia": "^3.0.3",
+    "sortablejs": "^1.15.7",
+    "spark-md5": "^3.0.2",
     "vite": "^4.0.0",
     "vite-plugin-html": "^3.2.2",
     "vue": "^3.5.21",
     "vue-router": "^4.6.3",
+    "vuedraggable": "^4.1.0",
     "vxe-pc-ui": "^4.9.41",
     "vxe-table": "~4.16.20",
     "vxe-table-plugin-element": "^4.0.4",

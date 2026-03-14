@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- 移动端适配：禁止页面缩放，但不影响地图缩放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <!-- 引入 OpenLayers 核心 CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/ol@9.2.4/ol.css">
+     <style>
+        /* 让地图占满整个页面 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+     <!-- 地图挂载的 DOM 容器 -->
+    <div id="map"></div>
+       <!-- 引入 OpenLayers 核心 JS -->
+   <script src="https://unpkg.com/ol@9.2.4/dist/ol.js"></script>
+    <script>
+        // 1. 创建地图实例
+        const map = new ol.Map({
+            // 2. 指定地图挂载的 DOM 元素
+            target: 'map',
+
+            // 3. 配置地图图层（底图图层）
+             layers: [
+                // 替换为天地图矢量底图（国内可稳定访问）
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: 'https://t{0-7}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=0aaa17283dcf96142dc9150daad2719f',
+                        projection: 'EPSG:3857'
+                    })
+                }),
+                // 天地图注记图层（可选，显示地名/道路名）
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: 'https://t{0-7}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=0aaa17283dcf96142dc9150daad2719f',
+                        projection: 'EPSG:3857'
+                    })
+                })
+            ],
+
+            // 4. 配置地图视角
+            view: new ol.View({
+                // 坐标系：Web 墨卡托（EPSG:3857，OpenLayers 默认）
+                projection: 'EPSG:3857',
+                // 地图中心点（中国区域的墨卡托坐标，可通过在线工具转换经纬度）
+                center: ol.proj.fromLonLat([105.0, 36.0]), // 经纬度转墨卡托坐标
+                // 初始缩放级别（2-18 常用，数值越大越详细）
+                zoom: 4,
+                // 可选：限制缩放范围，避免缩放过小/过大
+                minZoom: 2,
+                maxZoom: 18
+            })
+        });
+         // 2. 定义自定义矢量数据（GeoJSON格式）
+        // 示例：北京天安门点位 + 简单面区域
+        const customData = {
+            type: 'FeatureCollection',
+            features: [
+                // 点位要素（天安门）
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [116.3974, 39.9088] // 经纬度（WGS84）
+                    },
+                    properties: {
+                        name: '天安门',
+                        type: '地标'
+                    }
+                },
+                // 面要素（示例区域）
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [116.3, 39.8],
+                            [116.5, 39.8],
+                            [116.5, 40.0],
+                            [116.3, 40.0],
+                            [116.3, 39.8]
+                        ]]
+                    },
+                    properties: {
+                        name: '示例区域',
+                        area: '100km²'
+                    }
+                }
+            ]
+        };
+         // 3. 创建矢量图层并添加到地图
+        const vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: new ol.format.GeoJSON().readFeatures(customData, {
+                    // 转换经纬度到墨卡托坐标系
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                })
+            }),
+            // 自定义样式（区分点/线/面）
+            style: function (feature) {
+                const geometryType = feature.getGeometry().getType();
+                // 点位样式
+                if (geometryType === 'Point') {
+                    return new ol.style.Style({
+                        image: new ol.style.Icon({
+                            src: 'https://img.icons8.com/color/48/000000/marker.png', // 自定义图标
+                            size: [24, 24],
+                            anchor: [0.5, 1] // 锚点（图标底部中点对齐坐标）
+                        }),
+                        text: new ol.style.Text({
+                            text: feature.get('name'), // 显示属性名
+                            font: '12px Microsoft YaHei',
+                            fill: new ol.style.Fill({ color: '#333' }),
+                            offsetY: -25 // 文字在图标上方
+                        })
+                    });
+                }
+                // 面样式
+                if (geometryType === 'Polygon') {
+                    return new ol.style.Style({
+                        stroke: new ol.style.Stroke({ // 边框
+                            color: '#ff0000',
+                            width: 2
+                        }),
+                        fill: new ol.style.Fill({ // 填充
+                            color: 'rgba(255, 0, 0, 0.1)'
+                        })
+                    });
+                }
+            }
+        });
+
+        // 4. 将矢量图层添加到地图
+        map.addLayer(vectorLayer);
+    </script>
+</body>
+</html>

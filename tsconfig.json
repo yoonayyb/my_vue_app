@@ -24,7 +24,7 @@
 
     // 允许解析 JSON 模块
     "resolveJsonModule": true,
-
+    "verbatimModuleSyntax": false, // 允许模块语法（vite 3.0+）"preserve", //
     // 兼容常见 ESM -> CommonJS interop
     "esModuleInterop": true,
 

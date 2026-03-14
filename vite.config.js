@@ -11,6 +11,7 @@ import viteImagemin from 'vite-plugin-imagemin'
 import { lazyImport, VxeResolver } from 'vite-plugin-lazy-import'
 import eslintPlugin from 'vite-plugin-eslint'
 import viteCompression from 'vite-plugin-compression'
+import autoprefixer from 'autoprefixer';
 // import { createHtmlPlugin } from 'vite-plugin-html'
 const pathSrc = path.resolve(__dirname, 'src')
 console.log('🚀 ~ __dirname:', __dirname)
@@ -40,6 +41,11 @@ export default defineConfig(({ mode }) => {
   
 
   return {
+    css: {
+      postcss: {
+        plugins: [autoprefixer()],
+      },
+    },
     define: {
       'process.env': env,// 将环境变量注入到客户端代码中
       __VUE_OPTIONS_API__: true,    // 必须为 true
@@ -63,7 +69,7 @@ export default defineConfig(({ mode }) => {
     base: env.VITE_PUBLIC_PATH,
     build: {
       // 生产环境配置
-      minify: 'terser', // 使用 terser 进行压缩
+      minify: 'esbuild', // 使用 esbuild 进行压缩
       terserOptions: {
         compress: {
           drop_console: true, // 移除 console
@@ -73,6 +79,8 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         externals: isProduction ? externals : {},
         treeshake: true,
+        // 在 rollup 的插件链里生成 critical CSS（仅在构建时运行）
+       
         output: {
           // 第三方库单独打包
           manualChunks(id) {
@@ -211,7 +219,8 @@ export default defineConfig(({ mode }) => {
         gzipSize: true, // 显示 gzip 大小
         brotliSize: true, // 显示 brotli 大小
         filename: 'stats.html', // 分析报告文件名
-      }),
+      })
+      
     ],
   }
 })

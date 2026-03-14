@@ -15,8 +15,14 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parser: vuePlugin.parser, // 使用 Vue 解析器
+      parserOptions: {
+        parser: '@typescript-eslint/parser', // 使用 TypeScript 解析器
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        extraFileExtensions: ['.vue']
+      },
       globals: {
-        // 定义环境变量
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',

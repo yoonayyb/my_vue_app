@@ -94,14 +94,14 @@ console.timeEnd('b');
 //   console.log(5);
 // });
 function test(message){
-  console.log("message", this.name + '!')
+  console.log("message", this.name + '!',message)
   
 }
 const obj2 = {
   name: 'zhangsan',
-  test: function() {
-    console.log('obj2 fnSymbol', this.name);
-  }
+  // test: function(message) {
+  //   console.log('obj2 fnSymbol', this.name,message);
+  // }
 };
 Function.prototype.myCall = function(context, ...args) {
   context = context || window;
@@ -112,6 +112,7 @@ Function.prototype.myCall = function(context, ...args) {
   return result;
 }
 test.myCall(obj2, 'hello');
+test('hello');
 const target = { baseValue: 'base' };
 const handler = {
     get(target, prop, receiver) {
@@ -707,6 +708,7 @@ Function.prototype.myCall = (content, ...args) => {
   delete content[fnSymbol];
   return result;
 };
+
 Function.prototype.mybind = function(content, ...args) {
   const self = this;
   return function(...innerArgs) {
@@ -726,5 +728,29 @@ Function.prototype.myApply = function(content, args) {
   delete content[fnSymbol];
   return result;
 };
+
+
+//节流
+function throttle(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+        timer = null;
+      }, delay);
+    }
+  };
+}
+//防抖
+function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
 </script>
 </html>
