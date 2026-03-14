@@ -1,57 +1,76 @@
-# 将静态内容部署到 GitHub Pages 的简易工作流程
+# 工作流名称：将 Vue 项目的静态产物部署到 GitHub Pages
 name: Deploy static content to Pages
- 
+
+# 触发条件配置
 on:
-  # 仅在推送到默认分支时运行。
+  # 当代码推送到 main 分支时自动触发部署
   push:
-    branches: ['main']
- 
-  # 这个选项可以使你手动在 Action tab 页面触发工作流
-  workflow_dispatch:      
- 
-# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages。
+    branches: ['main'] # 只监听 main 分支的推送事件
+
+  # 支持在 GitHub Actions 页面手动点击触发该工作流
+  workflow_dispatch:
+
+# 配置 GITHUB_TOKEN 所需的最小权限，保障部署安全
 permissions:
-  contents: write
-  pages: write
-  id-token: write
- 
-# 允许一个并发的部署
+  contents: read   # 允许读取仓库内容（用于 checkout 代码）
+  pages: write     # 允许写入 GitHub Pages（用于部署静态资源）
+  id-token: write  # 允许写入 OIDC token（用于身份验证，GitHub Pages 部署必需）
+
+# 并发控制：同一时间只允许一个部署任务运行，避免多次推送引发冲突
 concurrency:
-  group: 'pages'
-  cancel-in-progress: true
- 
+  group: 'pages'           # 并发组名称，相同组的任务会进入排队或取消
+  cancel-in-progress: true # 若有新的部署触发，自动取消当前正在运行的部署
+
+# 定义工作流中的所有任务
 jobs:
-  # 单次部署的工作描述
+  # 任务名称：deploy，负责构建并部署项目到 GitHub Pages
   deploy:
+    # 配置 GitHub Pages 部署环境，部署成功后可通过 page_url 访问
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: github-pages                              # 使用 GitHub Pages 内置环境
+      url: ${{ steps.deployment.outputs.page_url }}  # 部署完成后输出的访问 URL
+
+    # 使用最新的 Ubuntu 系统作为运行环境
     runs-on: ubuntu-latest
+
+    # 定义该任务的执行步骤（按顺序执行）
     steps:
+      # 步骤1：检出代码，将仓库代码拉取到运行环境中
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
+        uses: actions/checkout@v4 # 使用官方 checkout Action v4
+
+      # 步骤2：安装 pnpm 包管理器（本项目使用 pnpm 管理依赖）
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4 # 使用 pnpm 官方 Action v4
         with:
-          version: 9
+          version: 9 # 指定 pnpm 版本为 9，与项目保持一致
+
+      # 步骤3：安装并配置 Node.js 运行环境
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # 使用官方 setup-node Action v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 20  # 指定 Node.js 版本为 20（LTS 长期支持版）
+          cache: 'pnpm'     # 启用 pnpm 依赖缓存，加快后续安装速度
+
+      # 步骤4：安装项目所有依赖包（根据 pnpm-lock.yaml 精确还原）
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile # 使用 --frozen-lockfile 确保依赖版本与锁文件完全一致
+
+      # 步骤5：执行构建命令，生成生产环境静态产物到 dist 目录
       - name: Build
-        run: pnpm run build        
+        run: pnpm run build # 运行 package.json 中定义的 build 脚本
+
+      # 步骤6：配置 GitHub Pages 环境，为后续上传和部署做准备
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v4 # 使用官方 configure-pages Action v4
+
+      # 步骤7：将 dist 目录打包为 artifact，供后续部署步骤使用
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3 # 使用官方 upload-pages-artifact Action v3
         with:
-          # Upload dist repository
-          path: './dist'
+          path: './dist' # 指定要上传的构建产物目录（Vite 默认输出到 dist）
+
+      # 步骤8：将上传的 artifact 部署到 GitHub Pages，完成整个 CI/CD 流程
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        id: deployment            # 为该步骤设置 ID，供上方 url 引用其输出值
+        uses: actions/deploy-pages@v4 # 使用官方 deploy-pages Action v4
