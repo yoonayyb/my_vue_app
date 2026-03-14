@@ -36,7 +36,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build project
-        run: pnpm run build
+        run: pnpm vite build
 
       - name: Prepare remote directory
         uses: appleboy/ssh-action@v1.0.3
@@ -57,8 +57,9 @@ jobs:
           host: ${{ secrets.ALIYUN_HOST }}
           username: ${{ secrets.ALIYUN_USER }}
           key: ${{ secrets.ALIYUN_SSH_KEY }}
-          source: "dist/*"
+          source: "dist/**"
           target: ${{ secrets.ALIYUN_TARGET_PATH }}
+          strip_components: 1
 
       - name: Reload Nginx
         uses: appleboy/ssh-action@v1.0.3
