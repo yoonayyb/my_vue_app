@@ -1,44 +1,71 @@
 
-name: Frontend CI/CD Deploy
+name: Deploy Frontend to Aliyun
 
 on:
   push:
-    branches:
-      - test
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "aliyun-deploy"
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: 🧱 Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: '18'
+          version: 9
 
-      - name: 📦 Install Dependencies
-        run: npm install
-
-      - name: 🛠️ Build Project
-        run: npm run build
-
-      - name: 📤 Deploy to Aliyun via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          host: ${{ secrets.ALIYUN_HOST }}
-          username: ${{ secrets.ALIYUN_USER }}
-          key: ${{ secrets.ALIYUN_SSH_KEY }}
-          source: "dist/*"
-          target: "/root/web/dist"
+          node-version: 20
+          cache: pnpm
 
-      - name: 🔁 Reload Nginx
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Prepare remote directory
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.ALIYUN_HOST }}
           username: ${{ secrets.ALIYUN_USER }}
           key: ${{ secrets.ALIYUN_SSH_KEY }}
           script: |
-            /usr/local/nginx/sbin/nginx -s reload
+            set -e
+            TARGET_PATH="${{ secrets.ALIYUN_TARGET_PATH }}"
+            mkdir -p "$TARGET_PATH"
+            cd "$TARGET_PATH"
+            find . -mindepth 1 ! -name ".user.ini" -delete
+
+      - name: Upload dist to Aliyun
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ALIYUN_HOST }}
+          username: ${{ secrets.ALIYUN_USER }}
+          key: ${{ secrets.ALIYUN_SSH_KEY }}
+          source: "dist/*"
+          target: ${{ secrets.ALIYUN_TARGET_PATH }}
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ALIYUN_HOST }}
+          username: ${{ secrets.ALIYUN_USER }}
+          key: ${{ secrets.ALIYUN_SSH_KEY }}
+          script: |
+            set -e
+            ${{ secrets.ALIYUN_NGINX_RELOAD_CMD }}
